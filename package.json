@@ -1,0 +1,23 @@
+{
+  "name": "mufclient",
+  "version": "1.0.8",
+  "description": "Una descripción de tu biblioteca",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "directories": {
+    "lib": "dist"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "upload": "npm run build && cd dist && npm version patch && npm publish && cd ..",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/socket.io-client": "^3.0.0",
+    "socket.io-client": "^4.7.5"
+  }
+}
