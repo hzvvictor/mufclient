@@ -9,8 +9,13 @@ interface EventCallbackConfig {
 type EventCallback = (data?: any) => any;
 type HandlerEventCallback = (data?: any) => any;
 
-class SocketEvents<TEvents extends string> {
-  private _events: Record<TEvents, string>;
+interface ISocketEventsParams<Obj extends object> {
+  socket: Socket;
+  events: Obj;
+  emitDefault?: Partial<Record<keyof Obj, any>>;
+};
+class SocketEvents<Obj extends object, TEvents extends keyof Obj> {
+  private _events: Obj;
   private _socket: Socket;
   private _emitDefault: Partial<Record<TEvents, any>> = {};
   private listeners: Record<string, HandlerEventCallback[]> = {};
@@ -62,7 +67,7 @@ class SocketEvents<TEvents extends string> {
       };
 
       const emitDefault = async (data: any) => {
-        const emitDefault = this._emitDefault[_event];
+        const emitDefault = (this._emitDefault as any)[_event];
         if (emitDefault && typeof emitDefault === "function") {
           const res = await emitDefault(data);
           console.log(`\n\t🚀 [Socket:emitDefault] -> ${_event}`, res);
@@ -82,14 +87,17 @@ class SocketEvents<TEvents extends string> {
   };
   constructor({
     socket: _socket,
-    events,
+    events: _events,
     emitDefault,
   }: {
     socket: Socket;
-    events: Record<TEvents, string>;
+    events: Obj,
     emitDefault?: Partial<Record<TEvents, any>>;
   }) {
-    this._events = events as any;
+    if (!_socket) {
+      throw new Error("Socket instance is required");
+    }
+    this._events = _events;
     this._socket = _socket;
     this._emitDefault = emitDefault || {};
     this.events = this.initEvents() as any;
@@ -138,6 +146,8 @@ const newSocketEvents = (socket: Socket, events: Record<string, string>, emitDef
     events,
     emitDefault,
   });
+  // instance.events[1]
+  // instance.events["1,2"]
   return instance;
 };
 export { newSocketEvents };

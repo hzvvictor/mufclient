@@ -13,8 +13,8 @@ type FnAsyncReturnCustom<T, R = unknown> = (...params: ParamsType<T>) => Promise
 
 const fnHandler = <T, Callback extends Function>(callback: Callback) => {
   type CallbackFunction = FnAsyncReturnCustom<Callback, null>;
-  const handler = newHandler({});
   const fn = async (...args: any[]) => {
+    const handler = newHandler({});
     const response = await handler(
       async (_req, res, next) => {
         const output = await callback(...args);
