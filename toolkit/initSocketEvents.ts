@@ -103,6 +103,17 @@ const initSocketEvents = <
   CONST_NAME = 'SOCKET',
 }:
   IInitSocketEventsParams<Types, Events>) => {
+  //* Antes de ejecutar los eventos base, agregamos los eventos base en caso de que no estén
+  const addBaseEvents = (events: Events) => {
+    if (!events.connect) events.connect = 'connect';
+    if (!events.disconnect) events.disconnect = 'disconnect';
+    if (!events.unauthorized) events.unauthorized = 'unauthorized';
+    if (!events.authenticate) events.authenticate = 'authenticate';
+    if (!events.join) events.join = 'join';
+    if (!events.leave) events.leave = 'leave';
+    if (!events.log) events.log = 'log';
+  };
+  addBaseEvents(events);
   // const CONST_NAME = 'MEETING';
   //* Infered Handlers !IMPORTANT
   type EventHandlers = {
@@ -233,7 +244,7 @@ const initSocketEvents = <
     handlers.connect.listen(() => {
       console.log(`✔️ [SOCKET:${CONST_NAME}]:[CONNECTED]`);
     }, { ref: 'connect:log' });
-  
+
     //* on log
     handlers.log.listen((data) => {
       console.log(`✔️ [SOCKET:${CONST_NAME}:LOG]`, data);
