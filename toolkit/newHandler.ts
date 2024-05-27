@@ -1,6 +1,6 @@
 
 // type Handle = (req: any, res: any, next: Function) => Promise<any> | any;
-interface Result<T> {
+export interface Result<T> {
   success: boolean,
   data?: T,
   error?: any
@@ -21,7 +21,7 @@ const newHandler = <REQ extends Record<string, any>, RES extends Response>(
   _req: REQ,
   _res: RES | Partial<Response> = {}
 ) => {
-  
+
   let config = {
     isShowError: true,
     isAutoResolve: true
@@ -29,13 +29,13 @@ const newHandler = <REQ extends Record<string, any>, RES extends Response>(
   const handler = async <Data>(...handles: (Handle<REQ, RES>)[]) => {
     let req = (_req || {}) as REQ;
     let res = (_res || {}) as RES;
-  
-    
+
+
     type Resolver = <T>(data: T) => Promise<Result<T>> | void;
     type Error = ({ resolve, res }: { resolve: Resolver, res: RES }) => (error: any) => void;
     type Success = ({ resolve, res }: { resolve: Resolver, res: RES }) => (data: Data) => void;
 
-    
+
     const error: Error = ({ resolve, res }) => (error) => {
       res.isResolved = true;
       // console.log('isShowError', { isShowError: handler.config.isShowError, error });
