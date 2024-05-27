@@ -9,14 +9,14 @@ export interface IEventsBase {
   leave: string;
   log: string;
 };
-interface IListenOptions {
+export interface IListenOptions {
   ref?: string;
   isOneListen?: boolean;
 };
-interface IListenData<T> {
+export interface IListenData<T> {
   <C extends (arg0: T) => void>(callback: C, options?: IListenOptions): void;
 };
-interface IEmitData<T> {
+export interface IEmitData<T> {
   (data: T, options?: { isLog?: boolean }): void;
 };
 
@@ -37,7 +37,7 @@ interface InferedInitHandler {
       [key in keyof Events]: ReturnType<InferedInitHandler>;
     }
 }; */
-interface IInitSocketEventsParams<Types extends Record<keyof Events, { listen: any, emit: any }>, Events extends IEventsBase> {
+export interface IInitSocketEventsParams<Types extends Record<keyof Events, { listen: any, emit: any }>, Events extends IEventsBase> {
   socket: Socket;
   /**
    * @description Objeto de eventos. 
