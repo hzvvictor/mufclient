@@ -1,6 +1,11 @@
 import Class from "./class";
-const MUFCLIENT = {
-  Class
+import toolkit from "./toolkit";
+const MUFCLIENT: {
+  Class: typeof Class;
+  toolkit: typeof toolkit;
+} = {
+  Class,
+  toolkit,
 };
-export { Class };
+export { Class , toolkit};
 export default MUFCLIENT;
