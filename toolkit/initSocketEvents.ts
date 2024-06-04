@@ -20,8 +20,8 @@ export interface IEmitData<T> {
   (data: T, options?: { isLog?: boolean }): void;
 };
 
-interface InferedInitHandler {
-  <L = any, E = any>(event: string, socket: Socket): {
+interface InferedInitHandler<L = any, E = any> {
+  (event: string, socket: Socket): {
     listen: IListenData<L>;
     emit: IEmitData<E>;
     /**
@@ -118,10 +118,10 @@ const initSocketEvents = <
   //* Infered Handlers !IMPORTANT
   type EventHandlers = {
     [key in keyof Events]: ReturnType<
-      typeof initHandler<Types[key]['listen'], Types[key]['emit']>
+      InferedInitHandler<Types[key]['listen'], Types[key]['emit']>
     >;
   };
-  const initHandler: InferedInitHandler = <L = any, E = any>(event: string, socket: Socket) => {
+  const initHandler: InferedInitHandler = (event: string, socket: Socket) => {
     const callbacks: { [key: string]: Function[] } = {};
     const uniqueCallbacks: { [key: string]: boolean } = {};
 
@@ -130,7 +130,7 @@ const initSocketEvents = <
       isUniqCallback?: boolean;
     };
 
-    const listen = <C extends (arg0: L) => void>(callback: C, {
+    const listen = <C extends Function>(callback: C, {
       ref = '',
       isUniqCallback = isUniqueCallbacksDefault
     }: IListenOptions = {}) => {
@@ -163,7 +163,7 @@ const initSocketEvents = <
       socket.on(event, callback as any);
     };
 
-    const emit = (data: E, { isLog = false } = {}) => {
+    const emit = <E>(data: E, { isLog = false } = {}) => {
       if (isLog) console.log(`[${event}]:[EMIT]`, data);
       socket.emit(event, data);
     };
@@ -256,3 +256,40 @@ const initSocketEvents = <
 };
 
 export default initSocketEvents;
+
+const example = () => {
+  //* Ejemplo de uso
+  const eventa = initSocketEvents({
+    socket: {} as Socket,
+    events: {
+      unauthorized: 'unauthorized',
+      authenticate: 'authenticate',
+      connect: 'connect',
+      disconnect: 'disconnect',
+      join: 'join',
+      leave: 'leave',
+      log: 'log',
+    },
+    eventsTypes: {
+      unauthorized: { listen: { message: '' }, emit: { message: '' } },
+      authenticate: { listen: { isCorrect: false }, emit: { email: '', password: '' } },
+      connect: {
+        listen: {
+          id: '',
+          name: '',
+        }, emit: {}
+      },
+      disconnect: { listen: {}, emit: {} },
+      join: { listen: {}, emit: {} },
+      leave: { listen: {}, emit: {} },
+      log: { listen: {}, emit: {} },
+    },
+    isShowLogs: true,
+    CONST_NAME: 'MEETING',
+    isUniqueCallbacksDefault: true,
+  });
+
+  eventa.connect.listen((data) => {
+    console.log('connect');
+  }, { ref: 'connect' });
+};
