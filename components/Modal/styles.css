@@ -1,0 +1,67 @@
+/* Estilos para el contenedor del modal */
+.mufclient_modal__container {
+  /* Estilos base del contenedor */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+/* Estilos para el modal en sí */
+.mufclient_modal__modal {
+  /* Estilos base del modal */
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  /* Ancho máximo del modal */
+  /* max-width: 600px; */
+  width: 100%;
+  /* Ocupa todo el ancho disponible */
+  /* padding: 24px; */
+  /* padding: 12px; */
+  padding: 18px;
+  transition: transform 0.3s ease-in-out;
+  position: relative;
+}
+
+.mufclient_modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+/* Estilos para el botón de cerrar */
+.mufclient_modal__close-button {
+  /* Estilos base del botón de cerrar */
+  /* position: absolute; */
+  /* top: 12px; */
+  /* right: 12px; */
+  color: #333333;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  box-shadow: 0 0 1px 2px #e2dede1a;
+  border-radius: 100%;
+  padding: 1px;
+  width: 30px;
+  height: 30px;
+  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.mufclient_modal__close-button:hover {
+  background-color: #f5f5f506;
+  box-shadow: 0 0 1px 2px #e2dede4d;
+}
+
+/* Estilos para el fondo del modal */
+.mufclient_modal__background {
+  /* Estilos base del fondo del modal */
+  background-color: rgba(0, 0, 0, 0.5);
+}

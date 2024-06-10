@@ -122,11 +122,15 @@ interface IControllerOptions {
   keyError?: string;
 }
 
+interface Query {
+  where: Record<string, any>
+  attributes: string[]
+};
 interface IRequest<B = any> extends Omit<IControllerOptions, 'fullUrl'> {
   id?: string | number;
   body?: B;
-  query?: any;
-  config?: any;
+  query?: Query;
+  config?: AxiosRequestConfig;
 }
 // const API = new APIClient('https://api.example.com', { getToken });
 // const userAPI = API.url('/users', { type: { id: 0, name: '' } });
