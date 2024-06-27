@@ -2,16 +2,17 @@ import { Socket, io } from "socket.io-client";
 
 type ID = string;
 
-interface ListenOptions {
+export interface ListenOptions {
   isOnlyLast?: boolean;
   isUniqueById?: boolean;
+  isStricId?: boolean;
 }
 
 // Tipo para extraer el tipo de los IDs de un evento
-type ExtractIdType<T> = T extends { ids: infer U } ? keyof U : never;
+export type ExtractIdType<T> = T extends { ids: infer U } ? keyof U : never;
 
 // Tipo para extraer el tipo de los IDs de un evento que estén en true
-type ExtractIdTypeOnlyTrue<T> = T extends { ids: infer U } ? {
+export type ExtractIdTypeOnlyTrue<T> = T extends { ids: infer U } ? {
   [K in keyof U]: U[K] extends true ? K : never;
 }[keyof U] : never;
 
@@ -31,6 +32,7 @@ class EventManager<Event extends {
   private listenOptions: ListenOptions = {
     isOnlyLast: true,
     isUniqueById: true,
+    isStricId: false,
   };
   private isListeningById: {
     [id: string]: boolean,
@@ -38,7 +40,10 @@ class EventManager<Event extends {
   private onPrimaryEvent: (payload: Event['listen']) => void = () => { };
   private IDs: { [key: string]: boolean };
 
-  constructor({ name, ids }: Event, socket: Socket, listenOptions?: ListenOptions) {
+  constructor(
+    { name, ids }: Event,
+    socket: Socket,
+    listenOptions?: ListenOptions) {
     this.name = name;
     this.socket = socket;
     this.listenOptions = listenOptions || {
@@ -49,7 +54,7 @@ class EventManager<Event extends {
   }
 
   listen(id: ExtractIdType<Event>, payload: (arg: Event['listen']) => void) {
-    if (!id || typeof id !== 'string') {
+    if (!id || !(typeof id === 'string' || typeof id === 'number')) {
       console.log(`\n\t⚠️ Check the ID of the event "${this.name}"\n`, {
         id,
         payload
@@ -57,7 +62,7 @@ class EventManager<Event extends {
       return;
     }
     const isIdTrue = this.IDs && id in this.IDs && this.IDs[id];
-    if (isIdTrue === false) {
+    if (isIdTrue === false && this.listenOptions.isStricId) {
       console.warn(`\n\t⚠️ Please, if you are going to use the ID "${id}" in the event "${this.name}", make sure it is set to true in the event configuration.\n`);
       return;
     }
@@ -181,7 +186,7 @@ class Events<T extends {
     listen: any,
     emit: any,
     options: ListenOptions,
-  }
+  } | string
 }> {
   private _events: T;
   constructor(events: T) {
@@ -285,6 +290,7 @@ class EventsSocket<E extends {
       console.log(`✨ ${SECTION} -> [LOG]`, payload);
     })
   }
+
   get events() {
     return this.eventManager;
   }
@@ -299,8 +305,8 @@ export {
 
   HandleEvents,
   EventManager,
-  ExtractIdType,
-  ExtractIdTypeOnlyTrue,
+  // ExtractIdType,
+  // ExtractIdTypeOnlyTrue,
 };
 const example = () => {
   const nameSpace = new NameSpace({

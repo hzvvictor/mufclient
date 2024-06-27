@@ -2,16 +2,34 @@ import React, { useEffect, useState, useReducer, useCallback } from "react";
 import { reducer } from "./reducer";
 import { ModalProps, initialState, actions, Listeners } from "./interface";
 
+const popupConfig: ModalProps = {
+  isOpen: false,
+  children: null,
+  isCloseVisible: true,
+  isOutsideClose: true,
+  sxContainer: {},
+  sxModal: {},
+  sxButtonClose: {},
+  sxHeaderTitle: {},
+  title: '',
+  zIndex: 2000,
+};
+export const setPopupDefaults = (props: ModalProps) => {
+  Object.keys(props).forEach((key: any) => {
+    (popupConfig as any)[key] = (props as any)[key];
+  });
+};
 const usePopup = ({
-  isOpen: isOpenProp = false,
-  children: childrenProp = null,
-  isCloseVisible: isCloseVisibleProp = true,
-  isOutsideClose: isOutsideCloseProp = true,
-  sxContainer = {},
-  sxModal = {},
-  sxButtonClose = {},
-  sxHeaderTitle = {},
-  title = '',
+  isOpen: isOpenProp = popupConfig.isOpen,
+  children: childrenProp = popupConfig.children,
+  isCloseVisible: isCloseVisibleProp = popupConfig.isCloseVisible!,
+  isOutsideClose: isOutsideCloseProp = popupConfig.isOutsideClose!,
+  sxContainer = popupConfig.sxContainer || {},
+  sxModal = popupConfig.sxModal || {},
+  sxButtonClose = popupConfig.sxButtonClose || {},
+  sxHeaderTitle = popupConfig.sxHeaderTitle || {},
+  title = popupConfig.title,
+  zIndex = popupConfig.zIndex!,
 }: ModalProps) => {
   const [isOpen, setIsOpen] = useState(isOpenProp);
   const [state, dispatch] = useReducer(reducer, {
@@ -24,6 +42,7 @@ const usePopup = ({
     sxButtonClose,
     sxHeaderTitle,
     title,
+    zIndex,
   });
 
   useEffect(() => {
@@ -115,6 +134,14 @@ const usePopup = ({
     onOpen,
     onClose,
     off,
+    set: (payload: Partial<ModalProps>) => {
+      for (const key in payload) {
+        const action = (actions as any)[key];
+        if (action) {
+          dispatch({ type: action, payload: (payload as any)[key] });
+        }
+      }
+    },
     get children() {
       return state.children;
     },
@@ -160,8 +187,14 @@ const usePopup = ({
     get title() {
       return state.title;
     },
-    set title(title: string) {
+    set title(title: string | React.ReactNode | null) {
       dispatch({ type: actions.title, payload: title });
+    },
+    get zIndex() {
+      return state.zIndex;
+    },
+    set zIndex(zIndex: number) {
+      dispatch({ type: actions.zIndex, payload: zIndex });
     },
   };
 };

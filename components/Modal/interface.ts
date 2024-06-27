@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { FC } from "react";
 
 export interface ModalConfig {
   children: {
@@ -36,14 +36,16 @@ export interface ModalConfig {
   };
   title: {
     type: 'SET_TITLE';
-    payload: string;
+    payload: string | React.ReactNode | null;
+  };
+  zIndex: {
+    type: 'SET_Z_INDEX';
+    payload: number;
   };
 }
 
 export type ModalState = {
-  [key in keyof ModalConfig]: ModalConfig[key] extends { type: string }
-  ? ModalConfig[key]["payload"]
-  : never;
+  [key in keyof ModalConfig]: ModalConfig[key]['payload'];
 }
 // export type ModalState = StateBase;
 
@@ -71,6 +73,7 @@ export const initialState: ModalState = {
   sxButtonClose: {},
   sxHeaderTitle: {},
   title: '',
+  zIndex: 2000,
 };
 
 type ActionsTypeValues = {
@@ -86,27 +89,35 @@ export const actions: ActionsTypeValues = {
   sxButtonClose: 'SET_SX_BUTTON_CLOSE',
   sxHeaderTitle: 'SET_SX_HEADER_TITLE',
   title: 'SET_TITLE',
+  zIndex: 'SET_Z_INDEX',
 };
 /* const types = Object.entries(actions).reduce(
   (acc, [key, value]) => ({ ...acc, [value]: key }),
   {},
 ) as { [value in ActionsType[keyof ActionsType]]: string }; */
 
-type HandlerAction<K extends keyof ModalConfig> = (
+export type HandlerAction<K extends keyof ModalConfig> = (
   state: ModalState,
   action: ModalConfig[K],
 ) => ModalState;
 
-type HandlerActions = {
-  [key in keyof ModalConfig]: HandlerAction<key>;
+export type HandlerActions = {
+  [key in ActionsTypeValues[keyof ActionsTypeValues]]: HandlerAction<
+    keyof ModalConfig
+  >;
 };
 export const actionHandlers: HandlerActions = Object.entries(actions).reduce(
   (acc, [key, value]) => ({
     ...acc,
-    [value]: (state, action) => ({
+    [value]: (state: any, action: any) => ({
       ...state,
       [key]: action.payload,
     }),
   }),
   {},
 ) as unknown as HandlerActions;
+
+// actionHandlers.SET_TITLE = (state, action) => ({
+//   ...state,
+//   title: action.payload as any,
+// });

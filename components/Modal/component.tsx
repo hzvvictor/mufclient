@@ -4,7 +4,7 @@ import React from "react";
 import usePopup from "./usePopup";
 import "./styles.css";
 
-interface PopupProps {
+export interface PopupProps {
   modal: ReturnType<typeof usePopup>;
   children?: React.ReactNode;
 }
@@ -14,18 +14,17 @@ const Popup: React.FC<PopupProps> = ({ modal, children }) => {
 
   return createPortal(
     <div
-      style={modal.sxContainer}
+      style={{ ...modal.sxContainer, zIndex: modal.zIndex }}
       onClick={() => modal.isOutsideClose && modal.close()}
       className={classNames("mufclient_modal__container")}
     >
       <div
+        onClick={(e) => e.stopPropagation()}
         style={modal.sxModal}
         className={classNames("mufclient_modal__modal")}
       >
         <div className={"mufclient_modal__header"}>
-          <span style={modal.sxHeaderTitle}>
-            {modal.title}
-          </span>
+          <span style={modal.sxHeaderTitle}>{modal.title}</span>
           {modal.isCloseVisible && (
             <button
               style={modal.sxButtonClose}
